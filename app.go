@@ -43,3 +43,8 @@ func (a *App) GetTimezoneList() []db.TimezoneEntry {
 func (a *App) AddTimezone(timezone string) {
 	a.db.Add(timezone)
 }
+
+// Remove timezone
+func (a *App) RemoveTimezone(timezone string) {
+	a.db.Remove(timezone)
+}

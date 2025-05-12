@@ -13,6 +13,7 @@ import {
   GetTimezoneList,
   GetTimezones,
 } from '../../../wailsjs/go/main/App';
+import { useTimezone } from '../../context/hooks';
 
 type TAddTzDialogProps = {
   handleClose: () => void;
@@ -23,6 +24,7 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
   handleClose,
   open,
 }) => {
+  const { setIsUsrTimezoneRefresh } = useTimezone();
   const [opts, setOpts] = React.useState<string[]>([]);
   const optSet = React.useRef<Set<string> | null>(null);
   const [value, setValue] = React.useState<string | null>(null);
@@ -38,10 +40,10 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
   React.useEffect(() => {
     Promise.all([GetTimezones(), GetTimezoneList()])
       .then(([timezones, usrTimezones]) => {
-        setOpts(timezones);
-        optSet.current = new Set(usrTimezones.map((tz) => tz.timezone));
+        setOpts(timezones ?? []);
+        optSet.current = new Set(usrTimezones?.map((tz) => tz.timezone) ?? []);
       })
-      .catch(() => {
+      .catch((err) => {
         setErrMsg('Failed to get timezones');
       });
   }, []);
@@ -71,6 +73,7 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
                 .finally(() => {
                   handleClose();
                   setIsLoading(false);
+                  setIsUsrTimezoneRefresh((p) => !p);
                 });
             }
           },
@@ -102,6 +105,7 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
             setValue(newValue);
           }}
           inputValue={inputValue}
+          getOptionLabel={(option) => option.replace(/_/g, ' ')}
           onInputChange={(_, newInputValue) => {
             setInputValue(newInputValue);
           }}

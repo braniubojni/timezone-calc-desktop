@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"slices"
+	"time"
 	"timezone-calc-desktop/internal/constants"
 )
 
@@ -20,6 +20,7 @@ type JsonDB struct {
 type TimezoneEntry struct {
 	ID       int    `json:"id"`
 	Timezone string `json:"timezone"`
+	AddedAt  string `json:"added_at"`
 }
 
 type Vault struct {
@@ -94,14 +95,12 @@ func (db *JsonDB) Add(tzName string) {
 			newTz = TimezoneEntry{
 				ID:       id,
 				Timezone: tz,
+				AddedAt:  time.Now().Format(time.RFC3339),
 			}
 			break
 		}
 	}
 	vault.Entries = append(vault.Entries, newTz)
-	slices.SortFunc(vault.Entries, func(a, b TimezoneEntry) int {
-		return a.ID - b.ID
-	})
 
 	data, err := json.Marshal(vault)
 	if err != nil {
@@ -115,26 +114,26 @@ func (db *JsonDB) Add(tzName string) {
 	}
 }
 
-func (db *JsonDB) Remove(tz TimezoneEntry) {
+func (db *JsonDB) Remove(timezone string) {
 	vault := db.GetAll()
 	if vault == nil {
 		return
 	}
-	for i, entry := range vault.Entries {
-		if entry.ID == tz.ID {
-			vault.Entries = slices.Delete(vault.Entries, i, i+1)
-			break
+
+	var newEntries []TimezoneEntry
+	for _, entry := range vault.Entries {
+		if entry.Timezone != timezone {
+			newEntries = append(newEntries, entry)
 		}
 	}
-	slices.SortFunc(vault.Entries, func(a, b TimezoneEntry) int {
-		return a.ID - b.ID
-	})
+	vault.Entries = newEntries
 
 	data, err := json.Marshal(vault)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
 	err = os.WriteFile(db.filename, data, 0644)
 	if err != nil {
 		fmt.Println(err)

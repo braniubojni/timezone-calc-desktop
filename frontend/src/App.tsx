@@ -1,21 +1,21 @@
 import AddIcon from '@mui/icons-material/Add';
 import { Box, IconButton } from '@mui/material';
 import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import tz from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useState } from 'react';
 import { AddTzDialog } from './components/AddTzDialog';
 import { Cards } from './components/Cards';
-import { TimezoneCtx } from './context';
-import { StyledBox } from './styles';
+import { SortSelect } from './components/SortSelect';
+import { TimezoneProvider } from './context/TimezoneProvider';
+import { StyledBox, Wrapper } from './styles';
 
 dayjs.extend(utc);
 dayjs.extend(tz);
 dayjs.extend(customParseFormat);
 
 function App() {
-  const [activeTimezone, setActiveTimezone] = useState<string | null>(null);
   const [isAddTz, setIsAddTz] = useState<boolean>(false);
   const onClose = () => {
     setIsAddTz(false);
@@ -23,13 +23,7 @@ function App() {
 
   return (
     <div id="App">
-      <TimezoneCtx.Provider
-        value={{
-          activeTimezone,
-          localTimezone: dayjs.tz.guess(),
-          setActiveTimezone,
-        }}
-      >
+      <TimezoneProvider>
         <StyledBox>
           <Box>
             <IconButton onClick={() => setIsAddTz(true)}>
@@ -44,16 +38,17 @@ function App() {
               width: '100%',
             }}
           >
-            <Box component="h4">
+            <Box component="h3">
               Current Time {dayjs().tz().format('HH:mm')}
             </Box>
           </Box>
-          <Box>
+          <Wrapper>
+            <SortSelect />
             <Cards />
-          </Box>
+          </Wrapper>
         </StyledBox>
         <AddTzDialog open={isAddTz} handleClose={onClose} />
-      </TimezoneCtx.Provider>
+      </TimezoneProvider>
     </div>
   );
 }
