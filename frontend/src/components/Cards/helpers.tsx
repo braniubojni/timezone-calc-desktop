@@ -7,7 +7,7 @@ export const renderCard = (
   timezones: db.TimezoneEntry[],
   sortOpt: SortOption
 ) => {
-  const sortedTimezones = timezones.toSorted((a, b) => {
+  const sortedTimezones = [...timezones].sort((a, b) => {
     if (sortOpt === SortOption.ALPHABET) {
       return a.id - b.id;
     }

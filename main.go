@@ -2,6 +2,8 @@ package main
 
 import (
 	"embed"
+	"os"
+	"path/filepath"
 	"timezone-calc-desktop/internal/db"
 
 	"github.com/wailsapp/wails/v2"
@@ -17,7 +19,9 @@ func main() {
 	app := NewApp()
 
 	// Initialize db
-	jsonDB := db.Init("vault.json")
+	dir, _ := os.UserCacheDir()
+	filePath := filepath.Join(dir, "timezone-calc-desktop", "vault.json")
+	jsonDB := db.Init(filePath)
 	app.db = jsonDB
 
 	// Create application with options
@@ -33,6 +37,7 @@ func main() {
 		Bind: []interface{}{
 			app,
 		},
+		MinWidth: 450,
 	})
 
 	if err != nil {

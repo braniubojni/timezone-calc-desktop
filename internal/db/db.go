@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 	"timezone-calc-desktop/internal/constants"
 )
@@ -41,12 +42,29 @@ func newDB(dbName string) *JsonDB {
 }
 
 func (db *JsonDB) Create() {
-	if _, err := os.Stat(db.filename); err == nil {
-		// File already exists, no need to create
+
+	// File already exists, no need to create
+	_, err := os.Stat(db.filename)
+	if err == nil {
 		return
-	} else if !os.IsNotExist(err) {
-		// Error other than file not existing
-		return
+	}
+
+	// File does not exist, create it
+	if os.IsNotExist(err) {
+		// Create the directory if it doesn't exist
+		err = os.MkdirAll(filepath.Dir(db.filename), 0755)
+		if err != nil {
+			panic(err)
+		}
+		// Create the file
+		_, err = os.Create(db.filename)
+		if err != nil {
+			panic(err)
+		}
+	}
+	// Check if the error is not related to the file not existing
+	if err != nil {
+		panic(err)
 	}
 
 	// Create new empty vault with empty entries array
