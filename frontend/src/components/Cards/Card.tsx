@@ -71,6 +71,20 @@ export const Card: React.FC<CardProps> = ({ timezone }) => {
           }}
           fullWidth
           autoComplete="off"
+          className="time"
+          slotProps={{
+            input: {
+              inputProps: {
+                style: {
+                  textAlign: 'center',
+                },
+              },
+            },
+            htmlInput: {
+              max: '23:59',
+              min: '00:00',
+            },
+          }}
         />
       </CardActions>
       <Dialog

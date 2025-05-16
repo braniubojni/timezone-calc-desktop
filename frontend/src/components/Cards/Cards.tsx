@@ -12,7 +12,6 @@ export const Cards = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [timezones, setTimezones] = React.useState<db.TimezoneEntry[]>([]);
   const { isUsrTimezoneRefresh, sortOpt } = useTimezone();
-  console.log({ sortOpt });
 
   React.useEffect(() => {
     setIsLoading(true);

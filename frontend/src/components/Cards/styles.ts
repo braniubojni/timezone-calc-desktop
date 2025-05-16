@@ -51,7 +51,7 @@ export const CardWrapper = styled(MuiCard)(({ theme }) => ({
 }));
 
 export const StyledField = styled(TextField)({
-  width: '36%',
+  width: '100%',
   '& input': {
     padding: 10,
     color: '#fff',
