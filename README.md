@@ -71,6 +71,14 @@ wails build -platform linux/amd64
 
 The built application will be available in `build/bin/timezone-calc-desktop`.
 
+## Coming soon
+
+Will work on crossplatform solutions:
+
+- Install from DMG or from homebrew
+- Downlad and install .msi file
+- Downlad and install in linux somehow
+
 ## License
 
 [MIT License](LICENSE)
