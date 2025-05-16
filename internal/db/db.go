@@ -118,6 +118,10 @@ func (db *JsonDB) Add(tzName string) {
 			break
 		}
 	}
+	if newTz.Timezone == "" {
+		fmt.Println("Timezone not found")
+		return
+	}
 	vault.Entries = append(vault.Entries, newTz)
 
 	data, err := json.Marshal(vault)
