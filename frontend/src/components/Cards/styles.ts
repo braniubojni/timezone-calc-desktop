@@ -11,6 +11,13 @@ export const Wrapper = styled(Box)(({ theme }) => ({
   gap: theme.spacing(4),
   maxWidth: '100%',
   transition: '0.3s',
+  minHeight: '40vh',
+  marginTop: theme.spacing(2),
+  '& > div': {
+    flex: '1 0 20%',
+    maxWidth: '30%',
+    minWidth: '300px',
+  },
 }));
 
 export const CardWrapper = styled(MuiCard)(({ theme }) => ({

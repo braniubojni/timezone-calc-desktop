@@ -46,12 +46,13 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
       .catch((err) => {
         setErrMsg('Failed to get timezones');
       });
-  }, []);
+  }, [open]);
 
   return (
     <Dialog
       open={open}
       onClose={handleClose}
+      disableRestoreFocus
       slotProps={{
         paper: {
           component: 'form',
@@ -112,8 +113,9 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
           onFocus={() => setErrMsg('')}
           fullWidth
           options={opts}
-          clearOnEscape
-          renderInput={(params) => <TextField {...params} label="Search" />}
+          renderInput={(params) => (
+            <TextField {...params} autoFocus label="Search" />
+          )}
           getOptionDisabled={(opt) => !!optSet.current?.has(opt)}
         />
       </DialogContent>

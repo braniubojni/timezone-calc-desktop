@@ -2,6 +2,7 @@ import {
   default as CancelIcon,
   default as SvgIcon,
 } from '@mui/icons-material/Cancel';
+import { InputAdornment } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -83,14 +84,15 @@ export const Card: React.FC<CardProps> = ({ timezone }) => {
               format="HH:mm"
               slotProps={{
                 textField: {
-                  ...(value !== null && {
-                    startAdornment: (
+                  startAdornment: (
+                    <InputAdornment position="start">
                       <CancelIcon
                         cursor="pointer"
                         onClick={() => onChange('', timezone)}
+                        sx={{ color: value ? 'inherit' : 'transparent' }}
                       />
-                    ),
-                  }),
+                    </InputAdornment>
+                  ),
                 },
               }}
             />

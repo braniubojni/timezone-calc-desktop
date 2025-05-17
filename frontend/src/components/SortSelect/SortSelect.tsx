@@ -1,8 +1,8 @@
 import NativeSelect from '@mui/material/NativeSelect';
 import * as React from 'react';
-import { BootstrapInput, SelectWrapper } from './styles';
-import { SortOption, sortOpts } from './consts';
 import { useTimezone } from '../../context/hooks';
+import { sortOpts } from './consts';
+import { BootstrapInput, SelectWrapper } from './styles';
 
 export const SortSelect = () => {
   const { setSortOpt } = useTimezone();

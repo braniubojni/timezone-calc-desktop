@@ -14,11 +14,16 @@ func cleanup(filePath string) {
 	}
 }
 
+func tmpSetup(t *testing.T) string {
+	tempDir := t.TempDir()
+	dbPath := filepath.Join(tempDir, "test_vault.json")
+	return dbPath
+}
+
 // TestInit tests the initialization of the database
 func TestInit(t *testing.T) {
 	// Use a temporary file for testing
-	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test_vault.json")
+	dbPath := tmpSetup(t)
 
 	// Initialize the database
 	db := Init(dbPath)
@@ -58,8 +63,7 @@ func TestInit(t *testing.T) {
 // TestCreate tests the Create method
 func TestCreate(t *testing.T) {
 	// Use a temporary file for testing
-	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test_vault.json")
+	dbPath := tmpSetup(t)
 
 	// Create a database instance
 	db := Init(dbPath)
@@ -90,8 +94,7 @@ func TestCreate(t *testing.T) {
 // TestGetAll tests the GetAll method
 func TestGetAll(t *testing.T) {
 	// Use a temporary file for testing
-	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test_vault.json")
+	dbPath := tmpSetup(t)
 
 	// Create and initialize the database with some test data
 	db := Init(dbPath)
@@ -147,8 +150,7 @@ func TestGetAll(t *testing.T) {
 // TestAdd tests the Add method
 func TestAdd(t *testing.T) {
 	// Use a temporary file for testing
-	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test_vault.json")
+	dbPath := tmpSetup(t)
 
 	// Create and initialize the database
 	db := Init(dbPath)
@@ -197,8 +199,7 @@ func TestAdd(t *testing.T) {
 // TestRemove tests the Remove method
 func TestRemove(t *testing.T) {
 	// Use a temporary file for testing
-	tempDir := t.TempDir()
-	dbPath := filepath.Join(tempDir, "test_vault.json")
+	dbPath := tmpSetup(t)
 
 	// Create and initialize the database
 	db := newDB(dbPath)
@@ -243,6 +244,66 @@ func TestRemove(t *testing.T) {
 	vault = db.GetAll()
 	if len(vault.Entries) != 0 {
 		t.Fatalf("Expected 0 entries after removing all timezones, got %d", len(vault.Entries))
+	}
+
+	// cleanup
+	cleanup(dbPath)
+}
+
+// TestRemoveAll tests the RemoveAll method
+func TestRemoveAll(t *testing.T) {
+	// Use a temporary file for testing
+	dbPath := tmpSetup(t)
+
+	// Create and initialize the database
+	db := Init(dbPath)
+
+	// Add multiple timezones
+	db.Add("Africa/Nairobi")
+	db.Add("Europe/Paris")
+	db.Add("America/New_York")
+
+	// Verify they were added
+	vault := db.GetAll()
+	if len(vault.Entries) != 3 {
+		t.Fatalf("Expected 3 entries after adding, got %d", len(vault.Entries))
+	}
+
+	// Call RemoveAll to remove all timezones
+	db.RemoveAll()
+
+	// Verify all entries were removed
+	vault = db.GetAll()
+	if len(vault.Entries) != 0 {
+		t.Fatalf("Expected 0 entries after RemoveAll, got %d", len(vault.Entries))
+	}
+
+	// Check that the file contains a valid but empty Vault structure
+	data, err := os.ReadFile(dbPath)
+	if err != nil {
+		t.Fatalf("Failed to read database file after RemoveAll: %v", err)
+	}
+
+	var emptyVault Vault
+	if err := json.Unmarshal(data, &emptyVault); err != nil {
+		t.Fatalf("Database file doesn't contain valid JSON after RemoveAll: %v", err)
+	}
+
+	// After RemoveAll, emptyVault.Entries might be nil or an empty slice
+	// Either is acceptable for an empty list in JSON, but we need to make sure
+	// that we can add items to the database later
+
+	// Add a new timezone after RemoveAll to ensure the database is still functional
+	db.Add("Asia/Tokyo")
+
+	// Verify it was added
+	vault = db.GetAll()
+	if len(vault.Entries) != 1 {
+		t.Fatalf("Expected 1 entry after adding post-RemoveAll, got %d", len(vault.Entries))
+	}
+
+	if vault.Entries[0].Timezone != "Asia/Tokyo" {
+		t.Fatalf("Expected timezone to be 'Asia/Tokyo', got '%s'", vault.Entries[0].Timezone)
 	}
 
 	// cleanup

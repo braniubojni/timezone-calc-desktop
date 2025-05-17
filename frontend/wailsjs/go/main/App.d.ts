@@ -8,6 +8,6 @@ export function GetTimezoneList():Promise<Array<db.TimezoneEntry>>;
 
 export function GetTimezones():Promise<Array<string>>;
 
-export function Greet(arg1:string):Promise<string>;
+export function RemoveAllTimezones():Promise<void>;
 
 export function RemoveTimezone(arg1:string):Promise<void>;

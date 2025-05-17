@@ -7,7 +7,7 @@ import utc from 'dayjs/plugin/utc';
 import { useState } from 'react';
 import { AddTzDialog } from './components/AddTzDialog';
 import { Cards } from './components/Cards';
-import { SortSelect } from './components/SortSelect';
+import { CardsHeader } from './components/CardsHeader';
 import { TimezoneProvider } from './context/TimezoneProvider';
 import { StyledBox, Wrapper } from './styles';
 
@@ -42,8 +42,15 @@ function App() {
               Current Time {dayjs().tz().format('HH:mm')}
             </Box>
           </Box>
-          <Wrapper>
-            <SortSelect />
+          <Wrapper
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+            }}
+          >
+            <CardsHeader />
             <Cards />
           </Wrapper>
         </StyledBox>

@@ -161,3 +161,23 @@ func (db *JsonDB) Remove(timezone string) {
 		fmt.Println(err)
 	}
 }
+
+func (db *JsonDB) RemoveAll() {
+	vault := db.GetAll()
+	if vault == nil {
+		return
+	}
+
+	var newEntries []TimezoneEntry
+	vault.Entries = newEntries
+	data, err := json.Marshal(vault)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	err = os.WriteFile(db.filename, data, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+}

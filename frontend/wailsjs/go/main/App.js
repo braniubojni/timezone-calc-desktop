@@ -14,8 +14,8 @@ export function GetTimezones() {
   return window['go']['main']['App']['GetTimezones']();
 }
 
-export function Greet(arg1) {
-  return window['go']['main']['App']['Greet'](arg1);
+export function RemoveAllTimezones() {
+  return window['go']['main']['App']['RemoveAllTimezones']();
 }
 
 export function RemoveTimezone(arg1) {
