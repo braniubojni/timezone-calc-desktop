@@ -1,16 +1,21 @@
 import {
-  default as CloseIcon,
+  default as CancelIcon,
   default as SvgIcon,
-} from '@mui/icons-material/Close';
+} from '@mui/icons-material/Cancel';
+import CloseIcon from '@mui/icons-material/Close';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import dayjs from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+import dayjs, { Dayjs } from 'dayjs';
 import * as React from 'react';
 import { RemoveTimezone } from '../../../wailsjs/go/main/App';
 import { useTimezone } from '../../context/hooks';
 import { Dialog } from '../Dialog';
-import { CardWrapper, StyledField } from './styles';
+import { CardWrapper, StyledTimePicker } from './styles';
 
 type CardProps = {
   timezone: string;
@@ -35,13 +40,13 @@ export const Card: React.FC<CardProps> = ({ timezone }) => {
 
   const isSource = timezone === sourceTimezone;
 
-  const value = React.useMemo(() => {
-    if (!selectedTime || !sourceTimezone) return '00:00';
+  const value: Dayjs | null = React.useMemo(() => {
+    if (!selectedTime || !sourceTimezone) return null;
     const base = dayjs.tz(
       `${dayjs().format('YYYY-MM-DD')} ${selectedTime}`,
       sourceTimezone
     );
-    return base.tz(timezone).format('HH:mm');
+    return base.tz(timezone);
   }, [selectedTime, sourceTimezone, timezone]);
 
   return (
@@ -57,35 +62,40 @@ export const Card: React.FC<CardProps> = ({ timezone }) => {
         <Typography noWrap>Offset {offset}</Typography>
       </CardContent>
       <CardActions>
-        <StyledField
-          variant="filled"
-          type="time"
-          margin="none"
-          size="small"
-          value={value}
-          onChange={(e) => {
-            if (!isSource) {
-              setActiveTimezone(timezone);
-            }
-            onChange(e.target.value, timezone);
-          }}
-          fullWidth
-          autoComplete="off"
-          className="time"
-          slotProps={{
-            input: {
-              inputProps: {
-                style: {
-                  textAlign: 'center',
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DemoContainer components={['TimePicker']}>
+            <StyledTimePicker
+              ampm={false}
+              viewRenderers={{
+                hours: renderTimeViewClock,
+                minutes: renderTimeViewClock,
+                seconds: renderTimeViewClock,
+              }}
+              value={value}
+              onChange={(e) => {
+                if (!isSource) {
+                  setActiveTimezone(timezone);
+                }
+                onChange(e ? e.format('HH:mm') : '', timezone);
+              }}
+              maxTime={dayjs('23:59', 'HH:mm')}
+              minTime={dayjs('00:00', 'HH:mm')}
+              format="HH:mm"
+              slotProps={{
+                textField: {
+                  ...(value !== null && {
+                    startAdornment: (
+                      <CancelIcon
+                        cursor="pointer"
+                        onClick={() => onChange('', timezone)}
+                      />
+                    ),
+                  }),
                 },
-              },
-            },
-            htmlInput: {
-              max: '23:59',
-              min: '00:00',
-            },
-          }}
-        />
+              }}
+            />
+          </DemoContainer>
+        </LocalizationProvider>
       </CardActions>
       <Dialog
         open={openDialog}

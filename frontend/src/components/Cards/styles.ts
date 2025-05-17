@@ -1,11 +1,7 @@
-import {
-  Box,
-  cardActionsClasses,
-  cardContentClasses,
-  styled,
-} from '@mui/material';
+import { cardActionsClasses, cardContentClasses, styled } from '@mui/material';
+import Box from '@mui/material/Box';
 import MuiCard from '@mui/material/Card';
-import TextField from '@mui/material/TextField';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 
 export const Wrapper = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -50,10 +46,83 @@ export const CardWrapper = styled(MuiCard)(({ theme }) => ({
   },
 }));
 
-export const StyledField = styled(TextField)({
+export const StyledTimePicker = styled(TimePicker)({
+  background: 'white',
+  borderRadius: 4,
   width: '100%',
+  '& .MuiPickersSectionList-root': {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   '& input': {
-    padding: 10,
-    color: '#fff',
+    padding: 0,
+  },
+  '& .MuiInputBase-input': {
+    color: '#000',
+    fontSize: 14,
+    fontWeight: 400,
+  },
+  '& .Mui-focused': {
+    boxShadow: '0px 6px 12px 0px rgba(10, 62, 102, 0.02)',
+    '&:hover': {
+      '& > .MuiOutlinedInput-notchedOutline': {
+        border: `1px solid darkblue`,
+      },
+    },
+
+    '& > .MuiOutlinedInput-notchedOutline': {
+      border: `1px solid darkblue`,
+    },
+  },
+  '& .MuiInputBase-root': {
+    width: '100%',
+    height: '100%',
+
+    '&:hover': {
+      '& > fieldset': {
+        border: `1px solid gray`,
+      },
+    },
+
+    '& > fieldset': {
+      '&:hover': {
+        boxShadow: '0px 6px 12px 0px rgba(10, 62, 102, 0.02)',
+      },
+      border: `1px solid gray`,
+    },
+  },
+  '& .Mui-disabled': {
+    boxShadow: 'none',
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: `1px solid gray !important`,
+    },
+  },
+
+  '& .Mui-error': {
+    '& .MuiOutlinedInput-notchedOutline': {
+      border: `1px solid red !important`,
+      '&:hover': {
+        border: `1px solid red`,
+      },
+    },
+  },
+
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'gray',
+    },
+
+    '&.Mui-focused fieldset': {
+      borderColor: `darkblue`,
+    },
+
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: `darkblue`,
+      border: `1px solid darkblue`,
+    },
+  },
+  fieldset: {
+    borderColor: '#FCFDFD',
   },
 });

@@ -38,7 +38,6 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
   };
 
   React.useEffect(() => {
-    console.log('AddTzDialog useEffect');
     Promise.all([GetTimezones(), GetTimezoneList()])
       .then(([timezones, usrTimezones]) => {
         setOpts(timezones ?? []);
