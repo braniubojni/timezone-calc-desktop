@@ -45,6 +45,30 @@ The application uses a client-server architecture:
 - **State Management**: React Context API
 - **Data Storage**: Local JSON file persistence
 
+## Building for Distribution
+
+### macOS
+
+```bash
+wails build -platform darwin/universal
+```
+
+The built application will be available in `build/bin/Timezone Calculator.app`.
+
+### Windows
+
+```bash
+wails build -platform windows/amd64
+```
+
+The built application will be available in `build/bin/Timezone Calculator.exe`.
+
+### Linux
+
+```bash
+wails build -platform linux/amd64
+```
+
 ## Coming soon
 
 Will work on crossplatform solutions:
