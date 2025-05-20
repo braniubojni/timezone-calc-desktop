@@ -26,7 +26,8 @@ export const Card: React.FC<CardProps> = ({ timezone }) => {
   const time = dayjs().tz(timezone).format('HH:mm');
   const [, city] = timezone.split('/');
   const offset = dayjs().tz(timezone).format('Z');
-  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+  const [resetTime, setResetTime] = React.useState<Dayjs>(dayjs());
 
   const {
     selectedTime,
@@ -50,8 +51,25 @@ export const Card: React.FC<CardProps> = ({ timezone }) => {
     return base.tz(timezone);
   }, [selectedTime, sourceTimezone, timezone]);
 
+  React.useEffect(() => {
+    // Update time every minute on the minute
+    const updateTime = () => {
+      setResetTime(dayjs());
+      // Schedule next update at the start of the next minute
+      const nextMinute = dayjs().add(1, 'minute').startOf('minute');
+      const timeUntilNextMinute = nextMinute.diff(dayjs(), 'millisecond');
+      return setTimeout(updateTime, timeUntilNextMinute);
+    };
+
+    // Initial update
+    const timeoutId = updateTime();
+
+    // Cleanup
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   return (
-    <CardWrapper>
+    <CardWrapper key={resetTime.unix()}>
       <SvgIcon onClick={onDel}>
         <CloseIcon />
       </SvgIcon>
