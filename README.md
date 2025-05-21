@@ -69,13 +69,6 @@ The built application will be available in `build/bin/Timezone Calculator.exe`.
 wails build -platform linux/amd64
 ```
 
-## Coming soon
-
-Will work on crossplatform solutions:
-
-- Install from DMG or from homebrew
-- Downlad and install on linux platform
-
 ## License
 
 [MIT License](LICENSE)
