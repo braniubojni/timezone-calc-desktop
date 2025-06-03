@@ -10,6 +10,8 @@ import { Cards } from './components/Cards';
 import { CardsHeader } from './components/CardsHeader';
 import { TimezoneProvider } from './context/TimezoneProvider';
 import { StyledBox, Wrapper } from './styles';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from './consts';
 
 dayjs.extend(utc);
 dayjs.extend(tz);
@@ -23,39 +25,41 @@ function App() {
 
   return (
     <div id="App">
-      <TimezoneProvider>
-        <StyledBox>
-          <Box>
-            <IconButton onClick={() => setIsAddTz(true)}>
-              <AddIcon />
-            </IconButton>
-          </Box>
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
-            <Box component="h3">
-              Current Time {dayjs().tz().format('HH:mm')}
+      <QueryClientProvider client={queryClient}>
+        <TimezoneProvider>
+          <StyledBox>
+            <Box>
+              <IconButton onClick={() => setIsAddTz(true)}>
+                <AddIcon />
+              </IconButton>
             </Box>
-          </Box>
-          <Wrapper
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
-            <CardsHeader />
-            <Cards />
-          </Wrapper>
-        </StyledBox>
-        <AddTzDialog open={isAddTz} handleClose={onClose} />
-      </TimezoneProvider>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+              }}
+            >
+              <Box component="h3">
+                Current Time {dayjs().tz().format('HH:mm')}
+              </Box>
+            </Box>
+            <Wrapper
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%',
+              }}
+            >
+              <CardsHeader />
+              <Cards />
+            </Wrapper>
+          </StyledBox>
+          <AddTzDialog open={isAddTz} handleClose={onClose} />
+        </TimezoneProvider>
+      </QueryClientProvider>
     </div>
   );
 }

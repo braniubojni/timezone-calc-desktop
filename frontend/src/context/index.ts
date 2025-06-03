@@ -9,8 +9,6 @@ type TimezoneContext = {
   setSelectedTime: React.Dispatch<React.SetStateAction<string>>;
   sourceTimezone: string;
   setSourceTimezone: React.Dispatch<React.SetStateAction<string>>;
-  isUsrTimezoneRefresh: boolean;
-  setIsUsrTimezoneRefresh: React.Dispatch<React.SetStateAction<boolean>>;
   sortOpt: SortOption;
   setSortOpt: React.Dispatch<React.SetStateAction<SortOption>>;
 };
@@ -23,8 +21,6 @@ export const TimezoneCtx = createContext<TimezoneContext>({
   setSelectedTime: () => {},
   sourceTimezone: '',
   setSourceTimezone: () => {},
-  isUsrTimezoneRefresh: false,
-  setIsUsrTimezoneRefresh: () => {},
   sortOpt: SortOption.ALPHABET,
   setSortOpt: () => {},
 });

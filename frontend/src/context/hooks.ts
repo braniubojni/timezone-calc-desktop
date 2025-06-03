@@ -6,10 +6,8 @@ export const useTimezone = () => {
     activeTimezone,
     sourceTimezone,
     selectedTime,
-    isUsrTimezoneRefresh,
     sortOpt,
     setSortOpt,
-    setIsUsrTimezoneRefresh,
     setActiveTimezone,
     setSelectedTime,
     setSourceTimezone,
@@ -25,10 +23,8 @@ export const useTimezone = () => {
     activeTz: activeTimezone,
     selectedTime,
     sourceTimezone,
-    isUsrTimezoneRefresh,
     onChange,
     setSortOpt,
     setActiveTimezone,
-    setIsUsrTimezoneRefresh,
   };
 };

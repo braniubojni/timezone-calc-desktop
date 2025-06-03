@@ -11,8 +11,6 @@ export const TimezoneProvider: FC<TimezoneProviderProps> = ({ children }) => {
   const [activeTimezone, setActiveTimezone] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [sourceTimezone, setSourceTimezone] = useState<string>('');
-  const [isUsrTimezoneRefresh, setIsUsrTimezoneRefresh] =
-    useState<boolean>(false);
   const [sortOpt, setSortOpt] = useState<SortOption>(SortOption.ALPHABET);
   return (
     <TimezoneCtx.Provider
@@ -24,8 +22,6 @@ export const TimezoneProvider: FC<TimezoneProviderProps> = ({ children }) => {
         setSelectedTime,
         sourceTimezone,
         setSourceTimezone,
-        isUsrTimezoneRefresh,
-        setIsUsrTimezoneRefresh,
         sortOpt,
         setSortOpt,
       }}

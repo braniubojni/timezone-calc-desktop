@@ -1,31 +1,20 @@
-import React from 'react';
-import { Card } from './Card';
-import { Wrapper } from './styles';
-import { GetTimezoneList } from '../../../wailsjs/go/main/App';
-import { Loader } from '../Loader';
-import { db } from '../../../wailsjs/go/models';
-import { useTimezone } from '../../context/hooks';
 import { Typography } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { GetTimezoneList } from '../../../wailsjs/go/main/App';
+import { useTimezone } from '../../context/hooks';
+import { Loader } from '../Loader';
 import { renderCard } from './helpers';
+import { Wrapper } from './styles';
 
 export const Cards = () => {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [timezones, setTimezones] = React.useState<db.TimezoneEntry[]>([]);
-  const { isUsrTimezoneRefresh, sortOpt } = useTimezone();
-
-  React.useEffect(() => {
-    setIsLoading(true);
-    GetTimezoneList()
-      .then((tzList) => {
-        setTimezones(tzList ?? []);
-      })
-      .catch(() => {
-        console.error('Failed to get timezones');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [isUsrTimezoneRefresh]);
+  const { sortOpt } = useTimezone();
+  const { data: timezones = [], isLoading } = useQuery({
+    queryKey: ['usrTimezones'],
+    queryFn: GetTimezoneList,
+    select(data) {
+      return data?.length ? data : [];
+    },
+  });
 
   return (
     <Wrapper>

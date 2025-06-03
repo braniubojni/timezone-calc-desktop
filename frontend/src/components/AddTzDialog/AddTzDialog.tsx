@@ -7,13 +7,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 import {
   AddTimezone,
   GetTimezoneList,
   GetTimezones,
 } from '../../../wailsjs/go/main/App';
-import { useTimezone } from '../../context/hooks';
 
 type TAddTzDialogProps = {
   handleClose: () => void;
@@ -24,29 +24,48 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
   handleClose,
   open,
 }) => {
-  const { setIsUsrTimezoneRefresh } = useTimezone();
-  const [opts, setOpts] = React.useState<string[]>([]);
-  const optSet = React.useRef<Set<string> | null>(null);
+  const queryClient = useQueryClient();
   const [value, setValue] = React.useState<string | null>(null);
   const [inputValue, setInputValue] = React.useState<string>('');
   const [errMsg, setErrMsg] = React.useState<string>('');
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const { mutate } = useMutation({
+    mutationFn: AddTimezone,
+    onError(error: Error) {
+      setErrMsg(error.message);
+    },
+    onSuccess() {
+      setValue(null);
+      setInputValue('');
+      setErrMsg('');
+      handleClose();
+      queryClient.invalidateQueries({
+        queryKey: ['usrTimezones'],
+      });
+    },
+  });
+  const { data: usrTzs, isLoading: usrLoad } = useQuery({
+    queryKey: ['usrTimezones'],
+    queryFn: GetTimezoneList,
+    enabled: open,
+  });
+  const { data: { disabledTzs, opts } = {}, isLoading: tzLoad } = useQuery({
+    queryKey: ['timezones'],
+    queryFn: GetTimezones,
+    enabled: open && !usrLoad,
+    select(data) {
+      const disabledTzs = new Set();
+      if (!data) return { opts: [], disabledTzs: disabledTzs };
+      return {
+        opts: data ?? [],
+        disabledTzs: new Set(usrTzs?.map((tz) => tz.timezone) ?? []),
+      };
+    },
+  });
 
   const onCancel = () => {
     setValue(null);
     setInputValue('');
   };
-
-  React.useEffect(() => {
-    Promise.all([GetTimezones(), GetTimezoneList()])
-      .then(([timezones, usrTimezones]) => {
-        setOpts(timezones ?? []);
-        optSet.current = new Set(usrTimezones?.map((tz) => tz.timezone) ?? []);
-      })
-      .catch((err) => {
-        setErrMsg('Failed to get timezones');
-      });
-  }, [open]);
 
   return (
     <Dialog
@@ -63,19 +82,7 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
           onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             if (value) {
-              setIsLoading(true);
-              await AddTimezone(value)
-                .then(() => {
-                  setValue(null);
-                  setInputValue('');
-                  setErrMsg('');
-                })
-                .catch((e) => setErrMsg(e?.message))
-                .finally(() => {
-                  handleClose();
-                  setIsLoading(false);
-                  setIsUsrTimezoneRefresh((p) => !p);
-                });
+              mutate(value);
             }
           },
         },
@@ -112,18 +119,18 @@ export const AddTzDialog: React.FC<TAddTzDialogProps> = ({
           }}
           onFocus={() => setErrMsg('')}
           fullWidth
-          options={opts}
+          options={opts ?? []}
           renderInput={(params) => (
             <TextField {...params} autoFocus label="Search" />
           )}
-          getOptionDisabled={(opt) => !!optSet.current?.has(opt)}
+          getOptionDisabled={(opt) => !!disabledTzs?.has(opt)}
         />
       </DialogContent>
       <DialogActions>
-        <Button disabled={!value || isLoading} onClick={onCancel}>
+        <Button disabled={!value || tzLoad} onClick={onCancel}>
           Cancel
         </Button>
-        <Button disabled={!value || isLoading} type="submit">
+        <Button disabled={!value || tzLoad} type="submit">
           Add
         </Button>
       </DialogActions>

@@ -1,18 +1,26 @@
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { Box } from '@mui/material';
-import { SortSelect } from '../SortSelect';
-import { IconWrapper, Wrapper } from './styles';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import React from 'react';
 import { RemoveAllTimezones } from '../../../wailsjs/go/main/App';
 import { Dialog } from '../Dialog';
-import React from 'react';
-import { useTimezone } from '../../context/hooks';
+import { SortSelect } from '../SortSelect';
+import { IconWrapper, Wrapper } from './styles';
 
 export const CardsHeader = () => {
-  const { setIsUsrTimezoneRefresh } = useTimezone();
+  const queryClient = useQueryClient();
   const [openDialog, setOpenDialog] = React.useState(false);
   const handleClick = () => {
     setOpenDialog(true);
   };
+  const { mutate } = useMutation({
+    mutationFn: RemoveAllTimezones,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['usrTimezones'],
+      });
+    },
+  });
   return (
     <>
       <Wrapper>
@@ -29,12 +37,9 @@ export const CardsHeader = () => {
         open={openDialog}
         title="Delete all timezones"
         onClose={() => setOpenDialog(false)}
-        onSubmit={async () => {
+        onSubmit={() => {
           setOpenDialog(false);
-          await RemoveAllTimezones().catch((err) => {
-            console.error('Error removing all timezones:', err);
-          });
-          setIsUsrTimezoneRefresh((p) => !p);
+          mutate();
         }}
         content="Are you sure you want to delete all this timezones?"
       />

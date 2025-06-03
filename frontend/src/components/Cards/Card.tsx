@@ -2,8 +2,8 @@ import {
   default as CancelIcon,
   default as SvgIcon,
 } from '@mui/icons-material/Cancel';
-import { InputAdornment } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { InputAdornment } from '@mui/material';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -11,6 +11,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs, { Dayjs } from 'dayjs';
 import * as React from 'react';
 import { RemoveTimezone } from '../../../wailsjs/go/main/App';
@@ -23,19 +24,23 @@ type CardProps = {
 };
 
 export const Card: React.FC<CardProps> = ({ timezone }) => {
+  const queryClient = useQueryClient();
   const time = dayjs().tz(timezone).format('HH:mm');
   const [, city] = timezone.split('/');
   const offset = dayjs().tz(timezone).format('Z');
   const [openDialog, setOpenDialog] = React.useState<boolean>(false);
   const [resetTime, setResetTime] = React.useState<Dayjs>(dayjs());
+  const { mutate } = useMutation({
+    mutationFn: RemoveTimezone,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['usrTimezones'],
+      });
+    },
+  });
 
-  const {
-    selectedTime,
-    sourceTimezone,
-    onChange,
-    setActiveTimezone,
-    setIsUsrTimezoneRefresh,
-  } = useTimezone();
+  const { selectedTime, sourceTimezone, onChange, setActiveTimezone } =
+    useTimezone();
   const onDel = () => {
     setOpenDialog(true);
   };
@@ -121,10 +126,9 @@ export const Card: React.FC<CardProps> = ({ timezone }) => {
         open={openDialog}
         title="Delete timezone"
         onClose={() => setOpenDialog(false)}
-        onSubmit={async () => {
+        onSubmit={() => {
           setOpenDialog(false);
-          await RemoveTimezone(timezone);
-          setIsUsrTimezoneRefresh((p) => !p);
+          mutate(timezone);
         }}
         content="Are you sure you want to delete this timezone?"
       />
